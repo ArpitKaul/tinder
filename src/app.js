@@ -1,22 +1,35 @@
-const express = require('express'); 
+const express = require('express')
+const connectDB = require("./config/database")
 const app = express();
+const User = require('./models/user')
 
-app.use("/user", 
-    (req , res)=>{
-     console.log("Handling the route user!!");
-     res.send("Response!!"); 
-},
-(req , res)=>{
-    console.log("Handling the route  2!!");
-    res.send("2nd Response!!");
+app.post("/signup" , async(req,res) =>{
+   
+    // creating a new instance of the user model
+    const user = new User({
+        firstName: "Arpit",
+        lastName: "Kaul",
+        email: "arpit@gmail.com", 
+        password: "arpit123"
+    });
+
+    try{
+        await user.save();
+    res.send("User Added successfully!!")
+    } catch (err){
+        res.status(400).send("error saving the user "+ err.message);
+    }  
 })
 
-app.listen(7777, () => {
-    console.log('Server started on port 7777');
-});
-   
+connectDB().then(()=>{
+    console.log("Database connection established...")
+    app.listen(7777, () => {
+        console.log("Server is running on port 7777");
+    })
+    
+}).catch(err=>{
+    console.error("Database cannot be connected")
+})
 
-// Multiple Route handlers - play with the code
-// next 
-// next function and errors along with res.send()
-// app.use("/route" , rh [rh2 rh3], rh4 , rh5);
+
+  
